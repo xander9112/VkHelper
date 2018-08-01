@@ -33,23 +33,26 @@ const getPublicUrl = appPackageJson =>
 // like /todos/42/static/js/bundle.7289d.js. We have to know the root.
 function getServedPath(appPackageJson) {
   const publicUrl = getPublicUrl(appPackageJson);
-  const servedUrl =
-    envPublicUrl || (publicUrl ? url.parse(publicUrl).pathname : '/');
+  const servedUrl = envPublicUrl ||
+    (publicUrl ? url.parse(publicUrl).pathname : '/');
   return ensureSlash(servedUrl, true);
 }
 
 // config after eject: we're in ./config/
 module.exports = {
   dotenv: resolveApp('.env'),
-  appBuild: resolveApp('build'),
+  appBuild: resolveApp('./.tmp/public'),
   appPublic: resolveApp('./.tmp/public'),
   appHtml: resolveApp('assets/index.html'),
-  appIndexJs: resolveApp('assets/src/index.js'),
+  appIndexJs: resolveApp('assets/src/index.tsx'),
   appPackageJson: resolveApp('package.json'),
   appSrc: resolveApp('assets/src'),
   yarnLockFile: resolveApp('yarn.lock'),
-  testsSetup: resolveApp('assets/src/setupTests.js'),
+  testsSetup: resolveApp('src/setupTests.ts'),
   appNodeModules: resolveApp('node_modules'),
+  appTsConfig: resolveApp('tsconfig.json'),
+  appTsProdConfig: resolveApp('tsconfig.prod.json'),
+  appTsLint: resolveApp('tslint.json'),
   publicUrl: getPublicUrl(resolveApp('package.json')),
   servedPath: getServedPath(resolveApp('package.json')),
 };

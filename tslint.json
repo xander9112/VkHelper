@@ -1,0 +1,13 @@
+{
+  "extends": ["tslint:recommended", "tslint-react", "tslint-config-prettier"],
+  "linterOptions": {
+    "exclude": [
+      "config/**/*.js",
+      "tasks/**/*.js",
+      "assets/config/**/*.js",
+      "assets/dependencies/**/*.js",
+      "node_modules/**/*.ts",
+      "app.js"
+    ]
+  }
+}
