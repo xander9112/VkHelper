@@ -10,9 +10,9 @@ vk.setCaptchaHandler((src, again, sid) => {
 module.exports = {
   androidApp: async (login, password, app = 664699, key = 'JU0ULwSYFqiWBsLgQ7gx') => {
     if (login.indexOf('@') > -1) {
-      vk.setOptions({login, password, app, key});
+      vk.setOptions({login, password});
     } else {
-      vk.setOptions({phone: login, password, app, key});
+      vk.setOptions({phone: login, password});
     }
     const androidApp = auth.androidApp();
 
