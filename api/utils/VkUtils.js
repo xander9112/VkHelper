@@ -8,7 +8,7 @@ vk.setCaptchaHandler((src, again, sid) => {
 });
 
 module.exports = {
-  androidApp: async (login, password, app = 664699, key = 'JU0ULwSYFqiWBsLgQ7gx') => {
+  androidApp: async (login, password) => {
     if (login.indexOf('@') > -1) {
       vk.setOptions({login, password});
     } else {
