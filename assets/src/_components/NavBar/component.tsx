@@ -102,20 +102,12 @@ class NavBar extends React.Component<IProps, IState> {
                             {/*src={user.avatar}*/}
                             {/*alt={user.first_name}*/}
                             {/*/>*/}
-                            <ListItemText primary={`${user.email}`} secondary={user.user_id} />
+                            <ListItemText primary={`${user.last_name} ${user.first_name}`} secondary={user.status} />
                         </ListItem>
                     </List>
                 </div>
                 <Divider />
                 <List>
-                    <NavLink to="/admin/roles" activeClassName="active">
-                        <ListItem button>
-                            <ListItemIcon>
-                                <InboxIcon />
-                            </ListItemIcon>
-                            <ListItemText primary="Роли" />
-                        </ListItem>
-                    </NavLink>
                     <NavLink to="/admin/groups" activeClassName="active">
                         <ListItem button>
                             <ListItemIcon>
@@ -126,14 +118,6 @@ class NavBar extends React.Component<IProps, IState> {
                     </NavLink>
                 </List>
                 <Divider />
-                <List>
-                    <ListItem button>
-                        <ListItemIcon>
-                            <InboxIcon />
-                        </ListItemIcon>
-                        <ListItemText primary="Inbox" />
-                    </ListItem>
-                </List>
             </div>
         );
 

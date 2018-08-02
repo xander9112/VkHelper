@@ -12,77 +12,69 @@ import Checkbox from "@material-ui/core/es/Checkbox/Checkbox";
 import CardActions from "@material-ui/core/es/CardActions/CardActions";
 
 interface IProps extends WithStyles<typeof styles> {
-    photo: IPhoto,
-    selected?: IPhoto[],
-    handleSelect?: (id) => void
+  photo: IPhoto,
+  selected?: IPhoto[],
+  handleSelect?: (id) => void
+  handleDelete?: (ownerId, photoId) => void
 }
 
 // interface IState {
 // }
 
 const styles = (theme: Theme) => createStyles({
-    card: {
-        maxWidth: 345,
-        cursor: "pointer"
-    },
-    media: {
-        height: 0,
-        paddingTop: "56.25%" // 16:9
-    },
-    actions: {
-        display: "flex",
-        justifyContent: "flex-end"
-    }
+  card: {
+    maxWidth: 345,
+    cursor: "pointer"
+  },
+  media: {
+    height: 0,
+    paddingTop: "56.25%" // 16:9
+  },
+  actions: {
+    display: "flex",
+    justifyContent: "flex-end"
+  }
 });
 
 class Component extends React.Component<IProps> {
-    public state = {};
+  public state = {};
 
-    public render() {
-        const {photo, classes, selected} = this.props;
-        let image = {
-            src: ""
-        };
+  public render() {
+    const {photo, classes, selected} = this.props;
+    let isSelected = false;
+    const image = photo.sizes.find(item => item.type === "m");
 
-        if (photo.sizes) {
-            image = photo.sizes.find(item => item.type === "m");
-        } else {
-            image = {
-                src: photo.photo_130
-            };
-        }
-        let isSelected = false;
-        console.log(photo);
-        if (selected) {
-            isSelected = !!selected.find(item => item.id === photo.id);
-        }
-        return (
-            <Grid item xs={4}>
-                <Card className={classes.card} onClick={this.handleSelect}>
-                    <CardMedia
-                        className={classes.media}
-                        image={image.src}
-                        title={photo.name}
-                    />
-                    {selected
-                        ? <CardActions className={classes.actions} disableActionSpacing>
-                            <Checkbox
-                                checked={isSelected}
-                                onChange={this.handleSelect}
-                            />
-                        </CardActions>
-                        : ""
-                    }
-                </Card>
-            </Grid>
-        );
+    if (selected) {
+      isSelected = !!selected.find(item => item.id === photo.id);
     }
 
-    private handleSelect = () => {
-        if (this.props.handleSelect) {
-            this.props.handleSelect(this.props.photo);
-        }
-    };
+    return (
+      <Grid item xs={4}>
+        <Card className={classes.card} onClick={this.handleSelect}>
+          <CardMedia
+            className={classes.media}
+            image={image.url}
+            title={photo.name}
+          />
+          {selected
+            ? <CardActions className={classes.actions} disableActionSpacing>
+              <Checkbox
+                checked={isSelected}
+                onChange={this.handleSelect}
+              />
+            </CardActions>
+            : ""
+          }
+        </Card>
+      </Grid>
+    );
+  }
+
+  private handleSelect = () => {
+    if (this.props.handleSelect) {
+      this.props.handleSelect(this.props.photo);
+    }
+  };
 }
 
 export const Photo = withStyles(styles, {withTheme: true})(Component);

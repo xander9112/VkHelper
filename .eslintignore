@@ -1,3 +1,6 @@
+api/**/*.js
+config/**/*.js
+assets/config/**/*.js
 assets/dependencies/**/*.js
 views/**/*.ejs
 

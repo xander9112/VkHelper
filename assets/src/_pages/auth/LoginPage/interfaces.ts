@@ -8,7 +8,7 @@ export interface IProps {
 }
 
 export interface IState {
-    email: string,
+    login: string,
     loading: boolean,
     password: string,
     submitted: boolean,

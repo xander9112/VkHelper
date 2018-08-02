@@ -1,7 +1,12 @@
 {
-  "extends": ["tslint:recommended", "tslint-react", "tslint-config-prettier"],
+  "extends": [
+    "tslint:recommended",
+    "tslint-react",
+    "tslint-config-prettier"
+  ],
   "linterOptions": {
     "exclude": [
+      "api/**/*.js",
       "config/**/*.js",
       "tasks/**/*.js",
       "assets/config/**/*.js",
@@ -9,5 +14,15 @@
       "node_modules/**/*.ts",
       "app.js"
     ]
+  },
+  "rules": {
+    "ordered-imports": false,
+    "no-bitwise": false,
+    "no-console": false,
+    "jsx-no-lambda": false,
+    "jsx-boolean-value": [
+      "never"
+    ],
+    "object-literal-sort-keys": false
   }
 }

@@ -6,8 +6,8 @@ const mapStateToProps = (state) => ({...state.groups, user: state.authentication
 
 const mapDispatchToProps = (dispatch) => ({
     getGroups: (userId) => dispatch(groupActions.getGroups(userId)),
-    updateGroup: (group) => dispatch(groupActions.updateGroup(group)),
-    deleteGroup: (group) => dispatch(groupActions.deleteGroup(group))
+    // updateGroup: (group) => dispatch(groupActions.updateGroup(group)),
+    // deleteGroup: (group) => dispatch(groupActions.deleteGroup(group))
 });
 
 const connectedGroupsPage = connect(mapStateToProps, mapDispatchToProps)(styledGroupsPage);
