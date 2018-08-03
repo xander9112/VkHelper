@@ -1,7 +1,8 @@
 const API_VERSION = "api/v1";
 
 export const config = {
-  apiUrl: `http://localhost:1337/${API_VERSION}`
+  // apiUrl: `http://localhost:1337/${API_VERSION}`
+  apiUrl: `http://192.168.0.150:1337/${API_VERSION}`
 };
 
 export enum States {
