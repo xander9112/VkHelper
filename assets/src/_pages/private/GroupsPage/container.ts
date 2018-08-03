@@ -2,7 +2,7 @@ import {connect} from "react-redux";
 import {groupActions} from "../../../_actions";
 import {styledGroupsPage} from "./component";
 
-const mapStateToProps = (state) => ({...state.groups, user: state.authentication.user});
+const mapStateToProps = (state) => ({...state.groups, user: state.auth.user});
 
 const mapDispatchToProps = (dispatch) => ({
     getGroups: (userId) => dispatch(groupActions.getGroups(userId)),

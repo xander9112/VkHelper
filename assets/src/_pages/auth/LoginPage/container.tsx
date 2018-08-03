@@ -1,19 +1,13 @@
-import {connect} from 'react-redux';
-import {LoginPage} from './component';
-import {userActions} from '../../../_actions';
+import {connect} from "react-redux";
+import {LoginPage} from "./component";
+import {authActions} from "../../../_actions";
 
-function mapStateToProps(state) {
-    const {loggingIn} = state.authentication;
-    return {
-        loggingIn
-    };
-}
+const mapStateToProps = (state) => ({...state.auth});
 
 const mapDispatchToProps = (dispatch) => {
-    return {
-        login: (email, password) => dispatch(userActions.login(email, password)),
-        logout: () => dispatch(userActions.logout()),
-    }
+  return {
+    login: (email, password) => dispatch(authActions.login(email, password)),
+  };
 };
 
 const connectedLoginPage = connect(mapStateToProps, mapDispatchToProps)(LoginPage);

@@ -30,13 +30,18 @@ module.exports = {
 
   fn: async function (inputs, exits) {
     const {from, to} = inputs;
-    const groups = await VkUtils.getGroupsByIds(this.req.headers.authorization, [from, to].join());
+    const {authorization} = this.req.headers;
+    const groups = await VkUtils.getGroupsByIds(authorization, [from, to].join());
 
-    return exits.success({
-      from: groups[0],
-      to: groups[1]
-    });
+    const groupFrom = groups[0];
+    const groupTo = groups[1];
+
+    const albumsFrom = await VkUtils.photosGetAlbums(authorization, `-${from}`);
+    const albumsTo = await VkUtils.photosGetAlbums(authorization, `-${to}`);
+
+    groupFrom.albums = albumsFrom.items;
+    groupTo.albums = albumsTo.items;
+
+    return exits.success({from: groupFrom, to: groupTo});
   }
-
-
 };

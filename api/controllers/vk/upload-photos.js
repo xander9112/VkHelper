@@ -3,7 +3,7 @@ const VkUtils = require('../../utils/VkUtils');
 module.exports = {
 
 
-  friendlyName: 'Upload photo',
+  friendlyName: 'Upload photos',
 
 
   description: '',
@@ -22,8 +22,12 @@ module.exports = {
     },
     source: {
       description: 'Vk photo',
-      type: 'string',
+      type: ['string'],
       required: true
+    },
+    caption: {
+      description: 'Vk caption',
+      type: 'string'
     }
   },
 
@@ -34,16 +38,16 @@ module.exports = {
 
 
   fn: async function (inputs, exits) {
-    const {album_id, group_id, source, caption = ''} = inputs;
+    const {album_id, group_id, source, caption} = inputs;
 
-    const photo = await VkUtils.uploadPhoto(this.req.headers.authorization, {
+    const photos = await VkUtils.uploadPhotos(this.req.headers.authorization, {
       album_id,
       group_id,
       source,
       caption
     });
 
-    return exits.success(photo);
+    return exits.success(photos);
   }
 
 

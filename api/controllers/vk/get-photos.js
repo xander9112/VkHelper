@@ -23,10 +23,6 @@ module.exports = {
     photo_sizes: {
       description: 'Vk photo_sizes',
       type: 'number'
-    },
-    offset: {
-      description: 'Vk offset',
-      type: 'number'
     }
   },
 
@@ -37,10 +33,10 @@ module.exports = {
 
 
   fn: async function (inputs, exits) {
-    const {owner_id, album_id, offset, photo_sizes} = inputs;
+    const {owner_id, album_id, photo_sizes} = inputs;
 
-    const photos = await VkUtils.getPhotos(this.req.headers.authorization, {owner_id, album_id, offset, photo_sizes});
+    const photos = await VkUtils.getPhotos(this.req.headers.authorization, {owner_id, album_id, photo_sizes});
 
-    return exits.success({offset, ...photos});
+    return exits.success(photos.items);
   }
 };

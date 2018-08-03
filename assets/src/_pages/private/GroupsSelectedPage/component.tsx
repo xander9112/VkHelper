@@ -1,302 +1,205 @@
 import * as React from "react";
-import {maxBy, random} from "lodash";
+import {maxBy, random, cloneDeep} from "lodash";
 import Grid from "@material-ui/core/Grid/Grid";
 import {Theme} from "@material-ui/core/styles/createMuiTheme";
 import {createStyles, withStyles, WithStyles} from "@material-ui/core";
-import KeyboardArrowRight from "@material-ui/icons/KeyboardArrowRight";
-import Button from "@material-ui/core/Button/Button";
 import {RouteComponentProps} from "react-router";
-import {IGroup} from "../../../_interfaces";
-import {IStates} from "../../../_interfaces";
+import {IGroup, IStates} from "../../../_interfaces";
 import {IPhoto} from "../../../_interfaces";
-import {Group} from "./Group";
-import {Photo} from "./Photo";
-import Typography from "@material-ui/core/es/Typography/Typography";
-import Paper from "@material-ui/core/es/Paper/Paper";
-import TablePagination from "@material-ui/core/es/TablePagination/TablePagination";
-import {TablePaginationActionsWrapped} from "./TablePaginationActions";
+import Button from "@material-ui/core/Button/Button";
+import KeyboardArrowRight from "@material-ui/icons/KeyboardArrowRight";
+import {LeftSide} from "./components/LeftSide";
+import {RightSide} from "./components/RightSide";
+import LinearProgress from "@material-ui/core/es/LinearProgress/LinearProgress";
 
 interface IProps extends WithStyles<typeof styles> {
-  state: IStates,
-  selectedGroups: {
-    from: IGroup,
-    to: IGroup
-  }
+  state: IStates
+  from: IGroup
+  to: IGroup
   photos: {
     from: {
-      offset: number,
-      count: number,
+      state: IStates
       items: IPhoto[]
     },
     to: {
-      offset: number,
-      count: number,
+      state: IStates
       items: IPhoto[]
     }
   }
   getSelectedGroups: (from, to) => void
-  getPhotosFrom: (ownerId) => void
-  getPhotosTo: (ownerId) => void
-  uploadPhoto: (params) => void
-  clearSelectedGroups: () => void
+  getPhotos: (type, params) => void
+  uploadPhotos: (params) => void
 }
 
 interface IState {
-  selected: IPhoto[]
-  uploadingPhoto: number,
-  pagination: {
-    from: {
-      rowsPerPage: number,
-      page: number
-    },
-    to: {
-      rowsPerPage: number,
-      page: number
-    }
+  uploadedPhoto: number
+  selected: {
+    from: IPhoto[],
+    to: IPhoto[],
+    [key: string]: any
+  },
+  album: {
+    from: number | null,
+    to: number | null
   }
 }
 
 const styles = (theme: Theme) => createStyles({
-  photoContainer: {
-    marginTop: 24
-  },
-  button: {
-    position: "absolute",
-    top: 300,
-    margin: theme.spacing.unit
-  },
   middleContainer: {
     display: "flex",
     justifyContent: "center",
     alignItems: "flex-start"
   },
-  root: {
-    padding: 15
+  progressWrap: {
+    flexGrow: 1
+  },
+  progress: {
+    margin: theme.spacing.unit * 2
   }
 });
 
 class Component extends React.Component<IProps & RouteComponentProps<any, any>, IState> {
   public state = {
-    selected: [],
-    uploadingPhoto: 0,
-    pagination: {
-      from: {
-        rowsPerPage: 5,
-        page: 0
-      },
-      to: {
-        rowsPerPage: 10,
-        page: 0
-      }
+    uploadedPhoto: 0,
+    selected: {
+      from: [],
+      to: []
+    },
+    album: {
+      from: null,
+      to: null
     }
   };
-
-  public componentWillReceiveProps(newProps) {
-    const {selectedGroups, photos} = newProps;
-
-    if (newProps.state === "NOT_ASKED") {
-      this.getSelectedGroups();
-    }
-
-    if (newProps.selectedGroups.from.id !== this.props.selectedGroups.from.id) {
-
-      this.getPhotos("from", {selectedGroups, photos});
-    }
-
-    if (newProps.selectedGroups.to.id !== this.props.selectedGroups.to.id) {
-      this.getPhotos("to", {selectedGroups, photos});
-    }
-  }
 
   public componentDidMount() {
-    this.getData();
-  };
+    const {params: {from, to}} = this.props.match;
 
-  public componentWillUnmount() {
-    this.props.clearSelectedGroups();
+    this.props.getSelectedGroups(from, to);
   }
 
+  // TODO: Показать прелоадер
   public render() {
-    const {selectedGroups, photos, classes} = this.props;
-    const {selected, uploadingPhoto, pagination} = this.state;
-
-    const itemsFrom = photos.from.items;
-    const itemsTo = photos.to.items;
-
-    const photosFrom = this.paginate(itemsFrom, pagination.from.rowsPerPage, pagination.from.page);
-    const photosTo = this.paginate(itemsTo, pagination.to.rowsPerPage, pagination.to.page);
+    const {classes, from, to, photos, state} = this.props;
+    const {album, selected} = this.state;
 
     return (
       <Grid container spacing={24}>
-        <Grid item xs={5}>
-          <Group group={selectedGroups.from} />
-          <Grid container spacing={24} className={classes.photoContainer}>
-            {photosFrom
-              .map(photo => <Photo photo={photo} key={photo.id} selected={selected}
-                                   handleSelect={this.handleSelect} />)}
-          </Grid>
-          <Grid container spacing={24} className={classes.photoContainer}>
-            <TablePagination
-              colSpan={3}
-              count={itemsFrom.length}
-              rowsPerPage={pagination.from.rowsPerPage}
-              page={pagination.from.page}
-              component="div"
-              onChangePage={(event, page) => this.handleChangePage(event, page, "from")}
-              onChangeRowsPerPage={(event) => this.handleChangeRowsPerPage(event, "from")}
-              ActionsComponent={TablePaginationActionsWrapped}
-            />
-          </Grid>
-
-        </Grid>
-        <Grid item xs={2} className={classes.middleContainer}>
-          {selected.length
-            ? <Paper className={classes.root} elevation={6}>
-              <Typography variant="headline" component="h3">
-                {selected.length + uploadingPhoto} / {uploadingPhoto}
-              </Typography>
-            </Paper>
-            : ""
-          }
-
-          <Button
-            variant="fab"
-            color="primary"
-            aria-label="Add"
-            disabled={!selected.length}
-            className={classes.button}
-            onClick={this.uploadPhotos}
-          >
-            <KeyboardArrowRight />
-          </Button>
-        </Grid>
-        <Grid item xs={5}>
-          <Group group={selectedGroups.to} />
-
-          <Grid container spacing={24} className={classes.photoContainer}>
-            {photosTo
-              .map(photo => <Photo photo={photo} key={photo.id} />)
-            }
-          </Grid>
-          <Grid container spacing={24} className={classes.photoContainer}>
-            <TablePagination
-              colSpan={3}
-              count={itemsTo.length}
-              rowsPerPage={pagination.to.rowsPerPage}
-              page={pagination.to.page}
-              component="div"
-              onChangePage={(event, page) => this.handleChangePage(event, page, "to")}
-              onChangeRowsPerPage={(event) => this.handleChangeRowsPerPage(event, "to")}
-              ActionsComponent={TablePaginationActionsWrapped}
-            />
-          </Grid>
-
-        </Grid>
+        {
+          state === "LOADED"
+            ? <React.Fragment>
+              <Grid item xs={5}>
+                <LeftSide
+                  photos={photos.from.items}
+                  group={from}
+                  selected={selected.from}
+                  getPhotos={this.getPhotos}
+                  handleSelect={this.handleSelect}
+                />
+              </Grid>
+              <Grid item xs={2} className={classes.middleContainer}>
+                <Button
+                  variant="fab"
+                  color="primary"
+                  aria-label="Add"
+                  disabled={!(album.from && album.to && selected.from.length)}
+                  onClick={this.handleSubmit}
+                >
+                  <KeyboardArrowRight />
+                </Button>
+              </Grid>
+              <Grid item xs={5}>
+                <RightSide
+                  photos={photos.to.items}
+                  group={to}
+                  selected={selected.to}
+                  getPhotos={this.getPhotos}
+                  handleSelect={this.handleSelect}
+                />
+              </Grid>
+            </React.Fragment>
+            : <div className={classes.progressWrap}>
+              <LinearProgress />
+            </div>
+        }
       </Grid>
     );
   }
 
-  private paginate = (array, pageSize, pageNumber) => {
-    return array.slice(pageNumber * pageSize, (pageNumber + 1) * pageSize);
-  };
+  private handleSubmit = async () => {
+    const {to} = this.props;
+    const {album, selected} = this.state;
 
-  private handleChangePage = (event, page, type) => {
-    const {pagination} = this.state;
-
-    pagination[type].page = page;
-
-    this.setState({pagination});
-  };
-
-  private handleChangeRowsPerPage = (event, type) => {
-    const {pagination} = this.state;
-
-    pagination[type].rowsPerPage = event.target.value;
-    this.setState({pagination});
-  };
-
-  private getData = async () => {
-    await this.getSelectedGroups();
-  };
-
-  private uploadPhotos = async () => {
-    const {selected} = this.state;
-
-    if (!selected.length) {
-      return;
+    if (album.from && album.to && selected.from.length) {
+      this.setState({uploadedPhoto: selected.from.length});
+      await this.uploadPhotos({album_id: album.to, group_id: to.id, sources: cloneDeep(selected.from)});
     }
-
-    const {id, main_album_id} = this.props.selectedGroups.to;
-
-    await this.uploadPhoto(main_album_id, id, selected);
   };
 
-  private uploadPhoto = async (albumId, groupId, selected) => {
-    const photo = selected[0];
-    const {sizes} = photo;
+  private uploadPhotos = async (params) => {
+    const {album_id, group_id, sources} = params;
+    const photoCount = 1;
 
-    const maxSize = maxBy(sizes, (size) => size.width);
+    const uploadSources = sources.slice(0, photoCount)
+      .map(source => maxBy(source.sizes, (size) => size.width).url);
 
-    await this.props.uploadPhoto({
-      albumId, groupId, source: maxSize.url
+    const caption = sources[0].text.replace(/[0-9]*.?руб/ig, (reg) => {
+      let price = parseInt(reg.split("руб")[0], 10);
+
+      price += (price / 100) * 20;
+
+      return price;
     });
 
-    selected.splice(0, 1);
+    await this.props.uploadPhotos({album_id, group_id, source: uploadSources, caption});
 
-    let {uploadingPhoto} = this.state;
+    sources.splice(0, photoCount);
 
-    uploadingPhoto += 1;
+    let {uploadedPhoto} = this.state;
 
-    this.setState({uploadingPhoto});
+    uploadedPhoto += photoCount;
 
-    if (selected.length) {
-      setTimeout(this.uploadPhoto, random(1000, 5000), albumId, groupId, selected);
+    this.setState({uploadedPhoto});
+
+    if (sources.length) {
+      setTimeout(this.uploadPhotos, random(500, 2000), {album_id, group_id, sources});
     } else {
-      this.setState({uploadingPhoto: 0});
+      this.setState({uploadedPhoto: 0});
     }
   };
 
-  private handleSelect = (photo: IPhoto) => {
-    const selected = this.state.selected as IPhoto[];
+  private handleSelect = (type, selected: IPhoto | IPhoto[]) => {
+    let selectedPhotos = this.state.selected[type] as IPhoto[];
 
-    const photoItem = selected.find(item => item.id === photo.id);
-
-    if (photoItem) {
-      const index = selected.indexOf(photoItem);
-      selected.splice(index, 1);
+    if (Array.isArray(selected)) {
+      selectedPhotos = selected;
     } else {
-      selected.push(photo);
-    }
+      const photoItem = selectedPhotos.find(item => item.id === selected.id);
 
-    this.setState({selected});
-  };
-
-  private getPhotos = (type, {selectedGroups, photos}) => {
-    const {id, main_album_id} = selectedGroups[type];
-    const {offset} = photos[type];
-
-    if (type === "from") {
-      if (main_album_id) {
-        this.props.getPhotosFrom({ownerId: id, albumId: main_album_id, offset, photo_sizes: 1});
-      }
-    } else {
-      if (main_album_id) {
-        this.props.getPhotosTo({ownerId: id, albumId: main_album_id, offset});
+      if (photoItem) {
+        const index = selectedPhotos.indexOf(photoItem);
+        selectedPhotos.splice(index, 1);
+      } else {
+        selectedPhotos.push(selected);
       }
     }
+
+
+    const newState = {
+      selected: {
+        ...this.state.selected,
+        [type]: selectedPhotos
+      }
+    };
+
+    this.setState(newState);
   };
 
-  private getSelectedGroups = () => {
-    const {selectedGroups} = this.props;
+  private getPhotos = (type, params) => {
+    const {album} = this.state;
 
-    if (!(selectedGroups.from.id || selectedGroups.to.id)) {
-      const search = this.props.location.search;
-      const params = new URLSearchParams(search);
-      const from = params.get("from");
-      const to = params.get("to");
-
-      return this.props.getSelectedGroups(from, to);
-    }
+    album[type.toLowerCase()] = params.album_id;
+    this.setState({album});
+    this.props.getPhotos(type, params);
   };
 }
 

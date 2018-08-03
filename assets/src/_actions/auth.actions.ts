@@ -1,6 +1,6 @@
 import {createAction} from "redux-actions";
-import {userConstants} from "../_constants";
-import {userService} from "../_services";
+import {authConstants} from "../_constants";
+import {authService} from "../_services";
 import {alertActions} from "./";
 import {history} from "../_helpers";
 
@@ -9,8 +9,8 @@ const login = (email, password) => {
     dispatch(request());
 
     try {
-      const user = await userService.login(email, password);
-
+      const user = await authService.login(email, password);
+      console.log(user);
       await dispatch(success(user));
       history.push("/");
     } catch (error) {
@@ -20,28 +20,28 @@ const login = (email, password) => {
   };
 
   function request() {
-    return createAction(userConstants.LOGIN_REQUEST)();
+    return createAction(authConstants.LOGIN_REQUEST)();
 
   }
 
   function success(user) {
-    return createAction(userConstants.LOGIN_SUCCESS)(user);
+    return createAction(authConstants.LOGIN_SUCCESS)(user);
   }
 
   function failure(error) {
-    return createAction(userConstants.LOGIN_FAILURE)(error);
+    return createAction(authConstants.LOGIN_FAILURE)(error);
   }
 };
 
-const logout = () => {
+const logout = async () => {
   return async dispatch => {
-    await userService.logout();
+    await authService.logout();
 
-    return dispatch(createAction(userConstants.LOGOUT)());
+    dispatch(createAction(authConstants.LOGOUT)());
   };
 };
 
-export const userActions = {
+export const authActions = {
   login,
   logout
 };

@@ -12,6 +12,8 @@ import Button from "@material-ui/core/Button";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import green from "@material-ui/core/colors/green";
 
+import {history} from "../../../_helpers";
+
 const styles = (theme: Theme) => createStyles({
   button: {},
   buttonProgress: {
@@ -35,12 +37,8 @@ const styles = (theme: Theme) => createStyles({
 });
 
 interface IProps extends WithStyles<typeof styles> {
-  button: string,
-  logout: () => {},
   login: (login: string, password: string) => void,
   loggingIn: boolean,
-  paper: string,
-  root: string,
 }
 
 class LoginPage extends React.Component<IProps, IState> {
@@ -48,8 +46,6 @@ class LoginPage extends React.Component<IProps, IState> {
     super(props);
 
     // reset login status
-    this.props.logout();
-
     this.state = {
       value: 0,
       login: "",
@@ -57,6 +53,12 @@ class LoginPage extends React.Component<IProps, IState> {
       password: "",
       submitted: false
     };
+  }
+
+  public componentDidMount() {
+    if (this.props.loggingIn) {
+      history.push("/");
+    }
   }
 
   public render() {

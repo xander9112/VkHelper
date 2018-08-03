@@ -151,21 +151,13 @@ class Component extends React.Component<IProps & RouteComponentProps<any, any>, 
     this.setState({open: true});
   };
 
-  // private handleClose = (): void => {
-  //     this.setState({open: false});
-  // };
-
   private handleSubmit = (): void => {
-    // this.props.addGroup(role);
-    // this.handleClose();
     const {selectedGroups} = this.state;
 
     if (selectedGroups.from && selectedGroups.to) {
       this.props.history.push({
-        pathname: `${this.props.match.path}/selected`,
-        search: `?from=${selectedGroups.from}&to=${selectedGroups.to}`
+        pathname: `${this.props.match.path}/selected/from-${selectedGroups.from}/to-${selectedGroups.to}`,
       });
-      // this.props.uploadPhotos(selectedGroups.from, selectedGroups.to);
     }
   };
 

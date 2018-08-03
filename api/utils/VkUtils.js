@@ -42,7 +42,7 @@ module.exports = {
     return api.groups.getById({group_ids, fields: 'main_album_id'});
   },
 
-  getPhotos: async (accessToken, {owner_id, album_id, photo_sizes = 0}) => {
+  getPhotos: async (accessToken, {owner_id, album_id, photo_sizes = 1}) => {
     vk.setToken(accessToken);
 
     const stream = collect.photos.get({owner_id, album_id, photo_sizes});
@@ -69,15 +69,38 @@ module.exports = {
     return vk.photos.delete({owner_id, photo_id});
   },
 
-  uploadPhoto: async (accessToken, params) => {
+  uploadPhotos: async (accessToken, params) => {
     vk.setToken(accessToken);
 
     try {
       const photos = await upload.photoAlbum(params);
 
-      return photos[0].payload;
+      const newPhotos = photos.map(photo => photo.payload);
+
+      return newPhotos;
     } catch (error) {
       throw new Error(error.message);
     }
+  },
+
+  photosGetAlbums: async (accessToken, owner_id) => {
+    vk.setToken(accessToken);
+
+    const stream = collect.photos.getAlbums({owner_id});
+    let items = [];
+    let total = 0;
+
+    return new Promise((resolve, reject) => {
+      stream.on('error', reject);
+
+      stream.on('data', payload => {
+        total = payload.total;
+        items = items.concat(payload.items);
+      });
+
+      stream.on('end', () => {
+        resolve({total, items});
+      });
+    });
   }
 };

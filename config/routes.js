@@ -48,7 +48,7 @@ module.exports.routes = {
   'GET    /api/v1/vk/get-groups':          {action: 'vk/get-groups'},
   'GET    /api/v1/vk/get-groups-selected': {action: 'vk/get-groups-selected'},
   'GET    /api/v1/vk/get-photos':          {action: 'vk/get-photos'},
-  'POST   /api/v1/vk/upload-photo':        {action: 'vk/upload-photo'},
+  'POST   /api/v1/vk/upload-photos':       {action: 'vk/upload-photos'},
   'DELETE /api/v1/vk/delete-photo':        {action: 'vk/delete-photo'}
 
   //  ╦ ╦╔═╗╔╗ ╦ ╦╔═╗╔═╗╦╔═╔═╗

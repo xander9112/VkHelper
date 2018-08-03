@@ -3,7 +3,7 @@ import {NavBar} from "./component";
 import {userActions} from "../../_actions";
 
 function mapStateToProps(state) {
-    const {loggingIn, user} = state.authentication;
+    const {loggingIn, user} = state.auth;
 
     return {
         loggingIn,

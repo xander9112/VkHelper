@@ -6,7 +6,7 @@ import Card from "@material-ui/core/Card";
 // import CardActions from "@material-ui/core/CardActions";
 // import CardContent from "@material-ui/core/CardContent";
 // import Typography from "@material-ui/core/Typography";
-import {IPhoto} from "../../../_interfaces";
+import {IPhoto} from "../../../../_interfaces/index";
 import CardMedia from "@material-ui/core/es/CardMedia/CardMedia";
 import Checkbox from "@material-ui/core/es/Checkbox/Checkbox";
 import CardActions from "@material-ui/core/es/CardActions/CardActions";
