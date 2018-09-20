@@ -45,8 +45,6 @@ export const groupsSelected = handleActions({
 
     return {
       ...state,
-      state: states.FAILURE,
-      error: payload,
       photos: {
         from: {
           state: states.LOADING,
@@ -81,8 +79,6 @@ export const groupsSelected = handleActions({
 
     return {
       ...state,
-      state: states.FAILURE,
-      error: payload,
       photos: {
         from: {...photos.from},
         to: {

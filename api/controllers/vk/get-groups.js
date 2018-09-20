@@ -3,36 +3,42 @@ const VkUtils = require('../../utils/VkUtils');
 module.exports = {
 
 
-  friendlyName: 'Get groups',
+    friendlyName: 'Get groups',
 
 
-  description: '',
+    description: '',
 
 
-  inputs: {
-    userId: {
-      description: 'Vk user_id',
-      // By declaring a numeric example, Sails will automatically respond with `res.badRequest`
-      // if the `userId` parameter is not a number.
-      type: 'number',
-      // By making the `userId` parameter required, Sails will automatically respond with
-      // `res.badRequest` if it's left out.
-      required: true
-    }
-  },
+    inputs: {
+        userId: {
+            description: 'Vk user_id',
+            // By declaring a numeric example, Sails will automatically respond with
+            // `res.badRequest` if the `userId` parameter is not a number.
+            type: 'number',
+            // By making the `userId` parameter required, Sails will automatically respond with
+            // `res.badRequest` if it's left out.
+            required: true,
+        },
+    },
 
 
-  exits: {
-    success: {
-    }
-  },
+    exits: {
+        success: {},
+    },
 
 
-  fn: async function (inputs, exits) {
-    const groups = await VkUtils.getGroups(this.req.headers.authorization, inputs.userId);
+    fn: async function (inputs, exits) {
+        try {
+            const groups = await VkUtils.getGroups(this.req.headers.authorization, inputs.userId);
 
-    return exits.success(groups);
-  }
+            return exits.success(groups);
+        } catch (error) {
+            sails.log(error);
+
+            return exits.success(error);
+        }
+
+    },
 
 
 };
